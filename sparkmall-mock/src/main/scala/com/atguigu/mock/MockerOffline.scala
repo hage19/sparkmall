@@ -44,6 +44,8 @@ object MockerOffline {
       .enableHiveSupport()
       .getOrCreate()
 
+//    val sc =new SparkContext(sparkConf)
+
     import spark.implicits._
 
     // 模拟数据
@@ -63,15 +65,15 @@ object MockerOffline {
     val productInfoDF: DataFrame = productInfoRdd.toDF()
     val cityInfoDF: DataFrame = cityInfoRdd.toDF()
 
-    insertHive(spark, "user_visit_action", userVisitActionDF)
-    insertHive(spark, "user_info", userInfoDF)
-    insertHive(spark, "product_info", productInfoDF)
-    insertHive(spark, "city_info", cityInfoDF)
-
+//    insertHive(spark, "user_visit_action", userVisitActionDF)
+//    insertHive(spark, "user_info", userInfoDF)
+//    insertHive(spark, "product_info", productInfoDF)
+//    insertHive(spark, "city_info", cityInfoDF)
+    spark.sql("select * from city_info").show(10)
     spark.close()
   }
 
-  def insertHive(sparkSession: SparkSession, tableName: String, dataFrame: DataFrame): Unit = {
+  def insertHive(tableName: String, sparkSession: SparkSession, dataFrame: DataFrame): Unit = {
     sparkSession.sql("drop table if exists " + tableName)
     dataFrame.write.saveAsTable(tableName)
     println("保存：" + tableName + "完成")
@@ -111,50 +113,50 @@ object MockerOffline {
       while (!isQuit) {
         val action: String = actionsOptions.getRandomOpt
 
-        if (action.equals("quit")) {
-          isQuit = true
-        } else {
-          val actionDateTime: Date = randomDate.getRandomDate
-          val actionDateString: String = new SimpleDateFormat("yyyy-MM-dd").format(actionDateTime)
-          val actionDateTimeString: String = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actionDateTime)
+              if (action.equals("quit")) {
+                isQuit = true
+              } else {
+                val actionDateTime: Date = randomDate.getRandomDate
+                val actionDateString: String = new SimpleDateFormat("yyyy-MM-dd").format(actionDateTime)
+                val actionDateTimeString: String = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actionDateTime)
 
-          var searchKeyword: String = null
-          var clickCategoryId: Long = -1L
-          var clickProductId: Long = -1L
-          var orderCategoryIds: String = null
-          var orderProductIds: String = null
-          var payCategoryIds: String = null
-          var payProductIds: String = null
+                var searchKeyword: String = null
+                var clickCategoryId: Long = -1L
+                var clickProductId: Long = -1L
+                var orderCategoryIds: String = null
+                var orderProductIds: String = null
+                var payCategoryIds: String = null
+                var payProductIds: String = null
 
-          var cityId: Long = RandomNum(1, 26).toLong
+                var cityId: Long = RandomNum(1, 26).toLong
 
-          action match {
-            case "search" => searchKeyword = searchKeywordsOptions.getRandomOpt
-            case "click" => clickCategoryId = RandomNum(1, cargoryNum)
-              clickProductId = RandomNum(1, productNum)
-            case "order" => orderCategoryIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
-              orderProductIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
-            case "pay" => payCategoryIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
-              payProductIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
-          }
+                  action match {
+                    case "search" => searchKeyword = searchKeywordsOptions.getRandomOpt
+                    case "click" => clickCategoryId = RandomNum(1, cargoryNum)
+                      clickProductId = RandomNum(1, productNum)
+                    case "order" => orderCategoryIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
+                      orderProductIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
+                    case "pay" => payCategoryIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
+                      payProductIds = RandomNum.multi(1, cargoryNum, RandomNum(1, 5), ",", canRepeat = false)
+                  }
 
-          val userVisitAction = UserVisitAction(
-            actionDateString,
-            userId.toLong,
-            sessionId,
-            RandomNum(1, pageNum).toLong,
-            actionDateTimeString,
-            searchKeyword,
-            clickCategoryId,
-            clickProductId,
-            orderCategoryIds,
-            orderProductIds,
-            payCategoryIds,
-            payProductIds,
-            cityId
-          )
-          rows += userVisitAction
-        }
+                  val userVisitAction = UserVisitAction(
+                    actionDateString,
+                    userId.toLong,
+                    sessionId,
+                    RandomNum(1, pageNum).toLong,
+                    actionDateTimeString,
+                    searchKeyword,
+                    clickCategoryId,
+                    clickProductId,
+                    orderCategoryIds,
+                    orderProductIds,
+                    payCategoryIds,
+                    payProductIds,
+                    cityId
+                  )
+                rows += userVisitAction
+              }
       }
 
     }

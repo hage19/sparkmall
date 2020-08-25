@@ -12,9 +12,16 @@ object RandomOptions {
       randomOptions.totalWeight += opt.weight
       for (i <- 1 to opt.weight) {
         randomOptions.optsBuffer += opt.value
+        println(randomOptions.totalWeight)
+        println(randomOptions.optsBuffer.tail)
       }
     }
     randomOptions
+  }
+
+  def main(args: Array[String]): Unit = {
+    val value = RandomOptions(RanOpt("search", 20), RanOpt("click", 60), RanOpt("order", 6), RanOpt("pay", 4), RanOpt("quit", 10))
+
   }
 
 }
