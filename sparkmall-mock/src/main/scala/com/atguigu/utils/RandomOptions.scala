@@ -12,8 +12,9 @@ object RandomOptions {
       randomOptions.totalWeight += opt.weight
       for (i <- 1 to opt.weight) {
         randomOptions.optsBuffer += opt.value
-        println(randomOptions.totalWeight)
-        println(randomOptions.optsBuffer.tail)
+
+//        println(randomOptions.totalWeight)
+//        println(randomOptions.optsBuffer.tail)
       }
     }
     randomOptions
